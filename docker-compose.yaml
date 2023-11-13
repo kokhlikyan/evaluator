@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ./api
+    container_name: api
+    depends_on:
+      - db
+    # these environment variables is only for testing
+    environment:
+      - DATABASE_URL=postgres://root:1234@db:5432/evaluator
+  db:
+    image: postgres:latest
+    # these environment variables is only for testing
+    environment:
+      POSTGRES_DB: evaluator
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./ingress/nginx.conf:/etc/nginx/nginx.conf
+      - ./api:/app
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+
+
